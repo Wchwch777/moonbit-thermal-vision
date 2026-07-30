@@ -60,6 +60,28 @@ pub(all) struct Hotspot {
 } derive(Debug, Eq, ToJson)
 
 ///|
+pub(all) struct ThermalStats {
+  count : Int
+  min : Double
+  max : Double
+  mean : Double
+  stddev : Double
+  p50 : Double
+  p90 : Double
+  p95 : Double
+} derive(Debug, Eq, ToJson)
+
+///|
+pub(all) struct InspectionReport {
+  frame_width : Int
+  frame_height : Int
+  threshold : Double
+  stats : ThermalStats
+  hotspots : Array[Hotspot]
+  regions : Array[ThermalRegion]
+} derive(Debug, Eq, ToJson)
+
+///|
 pub(all) suberror ThermalError {
   InvalidDimensions(width~ : Int, height~ : Int, values~ : Int)
   EmptyMatrix

@@ -66,3 +66,18 @@ test "hotspot detection sorts local peaks" {
   debug_inspect(spots[0].point, content="{ x: 3, y: 2 }")
   debug_inspect(spots[1].point, content="{ x: 1, y: 1 }")
 }
+
+///|
+test "statistics and markdown report" {
+  let matrix = ThermalMatrix::from_rows([
+    [20.0, 30.0],
+    [40.0, 50.0],
+  ])
+  let stats = matrix.stats()
+  inspect(stats.count, content="4")
+  inspect(stats.mean, content="35")
+  inspect(stats.p90, content="50")
+  let report = matrix.inspect_threshold(threshold=35.0)
+  assert_true(report.to_markdown().contains("Thermal Inspection Report"))
+  inspect(report.regions.length(), content="1")
+}
