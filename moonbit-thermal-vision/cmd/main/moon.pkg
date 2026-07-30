@@ -1,0 +1,7 @@
+// import {
+//   "2515050243qyf/moonbit-thermal-vision" @lib,
+// }
+
+options(
+  "is-main": true,
+)
