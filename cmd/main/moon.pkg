@@ -1,6 +1,6 @@
-// import {
-//   "2515050243qyf/moonbit-thermal-vision" @lib,
-// }
+import {
+  "Wchwch/moonbit-thermal-vision" @thermal,
+}
 
 options(
   "is-main": true,

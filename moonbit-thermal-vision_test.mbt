@@ -1,3 +1,2 @@
-// Blackbox tests run against the package's public API. Use `@moonbit-thermal-vision` to import.
-// Prefer high-level behaviors over implementation details.
-// Run `moon test` to execute and `moon test --update` to refresh snapshots.
+// Black-box tests are intentionally light in this root package because the
+// package name contains hyphens. Public behavior is covered in white-box tests.

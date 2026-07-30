@@ -9,18 +9,18 @@
 //   "moonbitlang/x@0.4.6",
 // }
 
-name = "2515050243qyf/moonbit-thermal-vision"
+name = "Wchwch/moonbit-thermal-vision"
 
 version = "0.1.0"
 
 readme = "README.mbt.md"
 
-repository = ""
+repository = "https://github.com/Wchwch/moonbit-thermal-vision"
 
 license = "Apache-2.0"
 
-keywords = []
+keywords = ["thermal", "infrared", "vision", "matrix", "inspection"]
 
 preferred_target = "wasm-gc"
 
-description = ""
+description = "Thermal infrared matrix analysis toolkit for MoonBit."
