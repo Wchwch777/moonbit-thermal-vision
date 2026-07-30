@@ -18,6 +18,27 @@ pub(all) struct ThermalMatrix {
 } derive(Debug, Eq, ToJson)
 
 ///|
+pub(all) struct Rgb {
+  r : Int
+  g : Int
+  b : Int
+} derive(Debug, Eq, ToJson)
+
+///|
+pub(all) enum Palette {
+  Gray
+  Ironbow
+  BlueRed
+} derive(Debug, Eq, ToJson)
+
+///|
+pub(all) struct ColorFrame {
+  width : Int
+  height : Int
+  pixels : Array[Rgb]
+} derive(Debug, Eq, ToJson)
+
+///|
 pub(all) suberror ThermalError {
   InvalidDimensions(width~ : Int, height~ : Int, values~ : Int)
   EmptyMatrix
@@ -39,4 +60,9 @@ pub fn TemperatureRange::span(range : TemperatureRange) -> Double {
 ///|
 pub fn TemperatureRange::contains(range : TemperatureRange, value : Double) -> Bool {
   value >= range.min && value <= range.max
+}
+
+///|
+pub fn Rgb::new(r~ : Int, g~ : Int, b~ : Int) -> Rgb {
+  { r: r.clamp(min=0, max=255), g: g.clamp(min=0, max=255), b: b.clamp(min=0, max=255) }
 }

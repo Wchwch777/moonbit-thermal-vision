@@ -31,3 +31,11 @@ test "parse mixed separated matrix text" {
   inspect(matrix.height, content="2")
   inspect(matrix.to_csv(), content="21.5,22,23.25\n24,25.5,26.75")
 }
+
+///|
+test "colorize maps cold and hot endpoints" {
+  let matrix = ThermalMatrix::from_rows([[10.0, 20.0]])
+  let frame = matrix.colorize(palette=Gray)
+  debug_inspect(frame.pixel(ThermalPoint::new(x=0, y=0)), content="{ r: 0, g: 0, b: 0 }")
+  debug_inspect(frame.pixel(ThermalPoint::new(x=1, y=0)), content="{ r: 255, g: 255, b: 255 }")
+}
