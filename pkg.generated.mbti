@@ -62,6 +62,20 @@ pub(all) struct TemperatureRange {
 pub fn TemperatureRange::contains(Self, Double) -> Bool
 pub fn TemperatureRange::span(Self) -> Double
 
+pub(all) struct ThermalMask {
+  width : Int
+  height : Int
+  cells : Array[Bool]
+} derive(Eq, ToJson, @debug.Debug)
+pub fn ThermalMask::close(Self, radius? : Int) -> Self
+pub fn ThermalMask::count(Self) -> Int
+pub fn ThermalMask::dilate(Self, radius? : Int) -> Self
+pub fn ThermalMask::erode(Self, radius? : Int) -> Self
+pub fn ThermalMask::get(Self, ThermalPoint) -> Bool raise ThermalError
+pub fn ThermalMask::new(width~ : Int, height~ : Int, cells~ : Array[Bool]) -> Self raise ThermalError
+pub fn ThermalMask::open(Self, radius? : Int) -> Self
+pub fn ThermalMask::to_ascii(Self, hot? : String, cold? : String) -> String
+
 pub(all) struct ThermalMatrix {
   width : Int
   height : Int
@@ -79,6 +93,7 @@ pub fn ThermalMatrix::new(width~ : Int, height~ : Int, values~ : Array[Double]) 
 pub fn ThermalMatrix::range(Self) -> TemperatureRange raise ThermalError
 pub fn ThermalMatrix::row(Self, Int) -> Array[Double] raise ThermalError
 pub fn ThermalMatrix::stats(Self) -> ThermalStats raise ThermalError
+pub fn ThermalMatrix::threshold_mask(Self, min_temp~ : Double, max_temp? : Double) -> ThermalMask
 pub fn ThermalMatrix::threshold_regions(Self, min_temp~ : Double, max_temp? : Double) -> Array[ThermalRegion]
 pub fn ThermalMatrix::to_csv(Self) -> String
 pub fn ThermalMatrix::unsafe_get(Self, x~ : Int, y~ : Int) -> Double

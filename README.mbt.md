@@ -15,6 +15,7 @@ temperature matrix.
 - Parse comma, semicolon, whitespace, and tab separated temperature matrices.
 - Map temperatures to grayscale, ironbow, or blue-red RGB frames.
 - Export pseudocolor frames as simple ASCII PPM data.
+- Build threshold masks and apply small morphology operations.
 - Extract connected regions above a temperature threshold.
 - Detect local hotspots with radius, contrast, and result limit controls.
 - Summarize min, max, mean, standard deviation, P50, P90, and P95.
@@ -69,6 +70,8 @@ moon test --deny-warn
 - `parse_temperature_matrix`: text parser for calibrated temperature grids.
 - `ThermalMatrix::range`, `ThermalMatrix::stats`: frame-level summaries.
 - `ThermalMatrix::colorize`: pseudocolor conversion to `ColorFrame`.
+- `ThermalMatrix::threshold_mask`: boolean masks for threshold workflows.
+- `ThermalMask::open`, `ThermalMask::close`: basic mask cleanup.
 - `ThermalMatrix::threshold_regions`: connected threshold components.
 - `ThermalMatrix::detect_hotspots`: local peak detection.
 - `ThermalMatrix::inspect_threshold`: one-call inspection report.
@@ -89,6 +92,7 @@ contributor identity is included.
 
 - Add binary adapter packages for common thermal camera export formats.
 - Add morphology helpers for cleaning noisy threshold masks.
+- Add connected-component extraction directly from cleaned masks.
 - Add color legend rendering and image file helpers.
 - Add tracking over frame sequences for inspection videos.
 - Add calibration metadata types for emissivity and reflected temperature.
