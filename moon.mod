@@ -19,7 +19,7 @@ repository = "https://github.com/Wchwch/moonbit-thermal-vision"
 
 license = "Apache-2.0"
 
-keywords = ["thermal", "infrared", "vision", "matrix", "inspection"]
+keywords = [ "thermal", "infrared", "vision", "matrix", "inspection" ]
 
 preferred_target = "wasm-gc"
 

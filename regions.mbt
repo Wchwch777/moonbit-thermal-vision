@@ -16,7 +16,7 @@ fn push_neighbor(
   x~ : Int,
   y~ : Int,
   width~ : Int,
-  height~ : Int
+  height~ : Int,
 ) -> Unit {
   if x >= 0 && y >= 0 && x < width && y < height {
     stack.push(ThermalPoint::new(x~, y~))
@@ -30,7 +30,7 @@ fn build_region(
   visited : Array[Bool],
   id~ : Int,
   min_temp~ : Double,
-  max_temp? : Double
+  max_temp? : Double,
 ) -> ThermalRegion {
   let stack : Array[ThermalPoint] = [start]
   let pixels : Array[ThermalPoint] = []
@@ -62,10 +62,34 @@ fn build_region(
               max_seen = value
               peak = point
             }
-            push_neighbor(stack, x=point.x - 1, y=point.y, width=matrix.width, height=matrix.height)
-            push_neighbor(stack, x=point.x + 1, y=point.y, width=matrix.width, height=matrix.height)
-            push_neighbor(stack, x=point.x, y=point.y - 1, width=matrix.width, height=matrix.height)
-            push_neighbor(stack, x=point.x, y=point.y + 1, width=matrix.width, height=matrix.height)
+            push_neighbor(
+              stack,
+              x=point.x - 1,
+              y=point.y,
+              width=matrix.width,
+              height=matrix.height,
+            )
+            push_neighbor(
+              stack,
+              x=point.x + 1,
+              y=point.y,
+              width=matrix.width,
+              height=matrix.height,
+            )
+            push_neighbor(
+              stack,
+              x=point.x,
+              y=point.y - 1,
+              width=matrix.width,
+              height=matrix.height,
+            )
+            push_neighbor(
+              stack,
+              x=point.x,
+              y=point.y + 1,
+              width=matrix.width,
+              height=matrix.height,
+            )
           }
         }
       }
@@ -89,7 +113,7 @@ fn build_region(
 pub fn ThermalMatrix::threshold_regions(
   matrix : ThermalMatrix,
   min_temp~ : Double,
-  max_temp? : Double
+  max_temp? : Double,
 ) -> Array[ThermalRegion] {
   let visited = Array::make(matrix.values.length(), false)
   let regions : Array[ThermalRegion] = []

@@ -2,7 +2,7 @@
 fn neighborhood_average(
   matrix : ThermalMatrix,
   center : ThermalPoint,
-  radius : Int
+  radius : Int,
 ) -> Double {
   let mut sum = 0.0
   let mut count = 0
@@ -10,8 +10,8 @@ fn neighborhood_average(
   let y1 = Int::min(matrix.height - 1, center.y + radius)
   let x0 = Int::max(0, center.x - radius)
   let x1 = Int::min(matrix.width - 1, center.x + radius)
-  for y in y0..=y1 {
-    for x in x0..=x1 {
+  for y in y0..<=y1 {
+    for x in x0..<=x1 {
       if !(x == center.x && y == center.y) {
         sum = sum + matrix.unsafe_get(x~, y~)
         count = count + 1
@@ -26,14 +26,18 @@ fn neighborhood_average(
 }
 
 ///|
-fn is_local_peak(matrix : ThermalMatrix, point : ThermalPoint, radius : Int) -> Bool {
+fn is_local_peak(
+  matrix : ThermalMatrix,
+  point : ThermalPoint,
+  radius : Int,
+) -> Bool {
   let center = matrix.unsafe_get(x=point.x, y=point.y)
   let y0 = Int::max(0, point.y - radius)
   let y1 = Int::min(matrix.height - 1, point.y + radius)
   let x0 = Int::max(0, point.x - radius)
   let x1 = Int::min(matrix.width - 1, point.x + radius)
-  for y in y0..=y1 {
-    for x in x0..=x1 {
+  for y in y0..<=y1 {
+    for x in x0..<=x1 {
       if !(x == point.x && y == point.y) && matrix.unsafe_get(x~, y~) > center {
         return false
       }
@@ -49,7 +53,8 @@ fn compare_hotspot_desc(a : Hotspot, b : Hotspot) -> Int {
   } else if a.temperature < b.temperature {
     1
   } else {
-    a.point.y.compare(b.point.y) |> fn(order) {
+    a.point.y.compare(b.point.y)
+    |> fn(order) {
       if order != 0 {
         order
       } else {
@@ -65,7 +70,7 @@ pub fn ThermalMatrix::detect_hotspots(
   min_temp~ : Double,
   radius? : Int = 1,
   min_contrast? : Double = 0.0,
-  limit? : Int = 16
+  limit? : Int = 16,
 ) -> Array[Hotspot] {
   let search_radius = Int::max(1, radius)
   let hotspots : Array[Hotspot] = []

@@ -1,8 +1,6 @@
+///|
 test "matrix construction and range" {
-  let matrix = ThermalMatrix::from_rows([
-    [12.0, 14.0, 13.5],
-    [11.0, 18.0, 15.0],
-  ])
+  let matrix = ThermalMatrix::from_rows([[12.0, 14.0, 13.5], [11.0, 18.0, 15.0]])
   inspect(matrix.width, content="3")
   inspect(matrix.height, content="2")
   inspect(matrix.get(ThermalPoint::new(x=1, y=1)), content="18")
@@ -36,8 +34,14 @@ test "parse mixed separated matrix text" {
 test "colorize maps cold and hot endpoints" {
   let matrix = ThermalMatrix::from_rows([[10.0, 20.0]])
   let frame = matrix.colorize(palette=Gray)
-  debug_inspect(frame.pixel(ThermalPoint::new(x=0, y=0)), content="{ r: 0, g: 0, b: 0 }")
-  debug_inspect(frame.pixel(ThermalPoint::new(x=1, y=0)), content="{ r: 255, g: 255, b: 255 }")
+  debug_inspect(
+    frame.pixel(ThermalPoint::new(x=0, y=0)),
+    content="{ r: 0, g: 0, b: 0 }",
+  )
+  debug_inspect(
+    frame.pixel(ThermalPoint::new(x=1, y=0)),
+    content="{ r: 255, g: 255, b: 255 }",
+  )
 }
 
 ///|
@@ -69,10 +73,7 @@ test "hotspot detection sorts local peaks" {
 
 ///|
 test "statistics and markdown report" {
-  let matrix = ThermalMatrix::from_rows([
-    [20.0, 30.0],
-    [40.0, 50.0],
-  ])
+  let matrix = ThermalMatrix::from_rows([[20.0, 30.0], [40.0, 50.0]])
   let stats = matrix.stats()
   inspect(stats.count, content="4")
   inspect(stats.mean, content="35")

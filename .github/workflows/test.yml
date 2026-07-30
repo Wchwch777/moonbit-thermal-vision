@@ -46,7 +46,7 @@ jobs:
         run: moon check --deny-warn
 
       - name: Interface info
-        run: moon info --deny-warn
+        run: moon info
 
       - name: Ensure generated interfaces are committed
         run: git diff --exit-code

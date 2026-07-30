@@ -1,0 +1,120 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Wchwch/moonbit-thermal-vision"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn parse_temperature_matrix(String) -> ThermalMatrix raise ThermalError
+
+// Errors
+pub(all) suberror ThermalError {
+  InvalidDimensions(width~ : Int, height~ : Int, values~ : Int)
+  EmptyMatrix
+  OutOfBounds(x~ : Int, y~ : Int, width~ : Int, height~ : Int)
+  RaggedRows(expected~ : Int, actual~ : Int, row~ : Int)
+  ParseNumber(token~ : String, row~ : Int, col~ : Int)
+} derive(Eq, ToJson, @debug.Debug)
+
+// Types and methods
+pub(all) struct ColorFrame {
+  width : Int
+  height : Int
+  pixels : Array[Rgb]
+} derive(Eq, ToJson, @debug.Debug)
+pub fn ColorFrame::pixel(Self, ThermalPoint) -> Rgb raise ThermalError
+pub fn ColorFrame::to_ppm_ascii(Self) -> String
+
+pub(all) struct Hotspot {
+  point : ThermalPoint
+  temperature : Double
+  contrast : Double
+} derive(Eq, ToJson, @debug.Debug)
+
+pub(all) struct InspectionReport {
+  frame_width : Int
+  frame_height : Int
+  threshold : Double
+  stats : ThermalStats
+  hotspots : Array[Hotspot]
+  regions : Array[ThermalRegion]
+} derive(Eq, ToJson, @debug.Debug)
+pub fn InspectionReport::to_markdown(Self) -> String
+
+pub(all) enum Palette {
+  Gray
+  Ironbow
+  BlueRed
+} derive(Eq, ToJson, @debug.Debug)
+
+pub(all) struct Rgb {
+  r : Int
+  g : Int
+  b : Int
+} derive(Eq, ToJson, @debug.Debug)
+pub fn Rgb::new(r~ : Int, g~ : Int, b~ : Int) -> Self
+
+pub(all) struct TemperatureRange {
+  min : Double
+  max : Double
+} derive(Eq, ToJson, @debug.Debug)
+pub fn TemperatureRange::contains(Self, Double) -> Bool
+pub fn TemperatureRange::span(Self) -> Double
+
+pub(all) struct ThermalMatrix {
+  width : Int
+  height : Int
+  values : Array[Double]
+} derive(Eq, ToJson, @debug.Debug)
+pub fn ThermalMatrix::colorize(Self, palette? : Palette, range? : TemperatureRange) -> ColorFrame raise ThermalError
+pub fn ThermalMatrix::crop(Self, origin~ : ThermalPoint, width~ : Int, height~ : Int) -> Self raise ThermalError
+pub fn ThermalMatrix::detect_hotspots(Self, min_temp~ : Double, radius? : Int, min_contrast? : Double, limit? : Int) -> Array[Hotspot]
+pub fn ThermalMatrix::from_rows(Array[Array[Double]]) -> Self raise ThermalError
+pub fn ThermalMatrix::get(Self, ThermalPoint) -> Double raise ThermalError
+pub fn ThermalMatrix::index(Self, ThermalPoint) -> Int raise ThermalError
+pub fn ThermalMatrix::inspect_threshold(Self, threshold~ : Double, hotspot_limit? : Int) -> InspectionReport raise ThermalError
+pub fn ThermalMatrix::map(Self, (Double) -> Double) -> Self
+pub fn ThermalMatrix::new(width~ : Int, height~ : Int, values~ : Array[Double]) -> Self raise ThermalError
+pub fn ThermalMatrix::range(Self) -> TemperatureRange raise ThermalError
+pub fn ThermalMatrix::row(Self, Int) -> Array[Double] raise ThermalError
+pub fn ThermalMatrix::stats(Self) -> ThermalStats raise ThermalError
+pub fn ThermalMatrix::threshold_regions(Self, min_temp~ : Double, max_temp? : Double) -> Array[ThermalRegion]
+pub fn ThermalMatrix::to_csv(Self) -> String
+pub fn ThermalMatrix::unsafe_get(Self, x~ : Int, y~ : Int) -> Double
+
+pub(all) struct ThermalPoint {
+  x : Int
+  y : Int
+} derive(Eq, ToJson, @debug.Debug)
+pub fn ThermalPoint::new(x~ : Int, y~ : Int) -> Self
+
+pub(all) struct ThermalRegion {
+  id : Int
+  pixels : Array[ThermalPoint]
+  min_x : Int
+  min_y : Int
+  max_x : Int
+  max_y : Int
+  min_temp : Double
+  max_temp : Double
+  average_temp : Double
+  peak : ThermalPoint
+} derive(Eq, ToJson, @debug.Debug)
+pub fn ThermalRegion::area(Self) -> Int
+
+pub(all) struct ThermalStats {
+  count : Int
+  min : Double
+  max : Double
+  mean : Double
+  stddev : Double
+  p50 : Double
+  p90 : Double
+  p95 : Double
+} derive(Eq, ToJson, @debug.Debug)
+
+// Type aliases
+
+// Traits
+

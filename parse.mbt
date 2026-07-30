@@ -10,7 +10,7 @@ fn normalize_matrix_line(line : String) -> String {
 fn parse_temperature_token(
   token : String,
   row~ : Int,
-  col~ : Int
+  col~ : Int,
 ) -> Double raise ThermalError {
   let mut sign = 1.0
   let mut value = 0.0
@@ -58,7 +58,9 @@ fn digit_value(ch : Char) -> Int {
 }
 
 ///|
-pub fn parse_temperature_matrix(text : String) -> ThermalMatrix raise ThermalError {
+pub fn parse_temperature_matrix(
+  text : String,
+) -> ThermalMatrix raise ThermalError {
   let rows : Array[Array[Double]] = []
   for raw_row_index, raw_line in text.split("\n") {
     let line = normalize_matrix_line(raw_line.to_owned()).trim().to_owned()
@@ -67,7 +69,9 @@ pub fn parse_temperature_matrix(text : String) -> ThermalMatrix raise ThermalErr
       for token_index, raw_token in line.split(" ") {
         let token = raw_token.trim().to_owned()
         if !token.is_empty() {
-          row.push(parse_temperature_token(token, row=raw_row_index, col=token_index))
+          row.push(
+            parse_temperature_token(token, row=raw_row_index, col=token_index),
+          )
         }
       }
       if !row.is_empty() {

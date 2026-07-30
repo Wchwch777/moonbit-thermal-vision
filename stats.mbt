@@ -10,7 +10,9 @@ fn percentile(sorted : Array[Double], p : Double) -> Double {
 }
 
 ///|
-pub fn ThermalMatrix::stats(matrix : ThermalMatrix) -> ThermalStats raise ThermalError {
+pub fn ThermalMatrix::stats(
+  matrix : ThermalMatrix,
+) -> ThermalStats raise ThermalError {
   if matrix.values.is_empty() {
     raise ThermalError::EmptyMatrix
   }
@@ -40,7 +42,7 @@ pub fn ThermalMatrix::stats(matrix : ThermalMatrix) -> ThermalStats raise Therma
 pub fn ThermalMatrix::inspect_threshold(
   matrix : ThermalMatrix,
   threshold~ : Double,
-  hotspot_limit? : Int = 8
+  hotspot_limit? : Int = 8,
 ) -> InspectionReport raise ThermalError {
   {
     frame_width: matrix.width,
@@ -70,7 +72,9 @@ pub fn InspectionReport::to_markdown(report : InspectionReport) -> String {
     lines.push("No hotspot above threshold.")
   } else {
     for spot in report.hotspots {
-      lines.push("- (\{spot.point.x}, \{spot.point.y}) \{spot.temperature} C, contrast \{spot.contrast} C")
+      lines.push(
+        "- (\{spot.point.x}, \{spot.point.y}) \{spot.temperature} C, contrast \{spot.contrast} C",
+      )
     }
   }
   lines.push("")

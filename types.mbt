@@ -101,11 +101,18 @@ pub fn TemperatureRange::span(range : TemperatureRange) -> Double {
 }
 
 ///|
-pub fn TemperatureRange::contains(range : TemperatureRange, value : Double) -> Bool {
+pub fn TemperatureRange::contains(
+  range : TemperatureRange,
+  value : Double,
+) -> Bool {
   value >= range.min && value <= range.max
 }
 
 ///|
 pub fn Rgb::new(r~ : Int, g~ : Int, b~ : Int) -> Rgb {
-  { r: r.clamp(min=0, max=255), g: g.clamp(min=0, max=255), b: b.clamp(min=0, max=255) }
+  {
+    r: r.clamp(min=0, max=255),
+    g: g.clamp(min=0, max=255),
+    b: b.clamp(min=0, max=255),
+  }
 }

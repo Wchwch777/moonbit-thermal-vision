@@ -2,6 +2,4 @@ import {
   "Wchwch/moonbit-thermal-vision" @thermal,
 }
 
-options(
-  "is-main": true,
-)
+pkgtype(kind: "executable")
