@@ -2,6 +2,9 @@
 
 This is a [MoonBit](https://docs.moonbitlang.com) project.
 
+The package implements thermal infrared matrix analysis. Keep domain logic in
+the root library package and keep `cmd/main` as a thin demonstration layer.
+
 You can browse and install extra skills here:
 <https://github.com/moonbitlang/skills>
 
