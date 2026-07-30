@@ -53,3 +53,16 @@ test "threshold regions group connected hot pixels" {
   debug_inspect(regions[0].peak, content="{ x: 2, y: 0 }")
   inspect(regions[1].area(), content="1")
 }
+
+///|
+test "hotspot detection sorts local peaks" {
+  let matrix = ThermalMatrix::from_rows([
+    [20.0, 23.0, 20.0, 18.0],
+    [21.0, 48.0, 25.0, 19.0],
+    [20.0, 24.0, 22.0, 51.0],
+  ])
+  let spots = matrix.detect_hotspots(min_temp=40.0, radius=1, min_contrast=10.0)
+  inspect(spots.length(), content="2")
+  debug_inspect(spots[0].point, content="{ x: 3, y: 2 }")
+  debug_inspect(spots[1].point, content="{ x: 1, y: 1 }")
+}

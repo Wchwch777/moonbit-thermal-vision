@@ -53,6 +53,13 @@ pub(all) struct ThermalRegion {
 } derive(Debug, Eq, ToJson)
 
 ///|
+pub(all) struct Hotspot {
+  point : ThermalPoint
+  temperature : Double
+  contrast : Double
+} derive(Debug, Eq, ToJson)
+
+///|
 pub(all) suberror ThermalError {
   InvalidDimensions(width~ : Int, height~ : Int, values~ : Int)
   EmptyMatrix
