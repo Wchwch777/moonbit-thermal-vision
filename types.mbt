@@ -53,6 +53,13 @@ pub(all) struct ThermalRegion {
 } derive(Debug, Eq, ToJson)
 
 ///|
+pub(all) struct ThermalMask {
+  width : Int
+  height : Int
+  cells : Array[Bool]
+} derive(Debug, Eq, ToJson)
+
+///|
 pub(all) struct Hotspot {
   point : ThermalPoint
   temperature : Double

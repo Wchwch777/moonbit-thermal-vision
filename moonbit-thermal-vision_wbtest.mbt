@@ -82,3 +82,17 @@ test "statistics and markdown report" {
   assert_true(report.to_markdown().contains("Thermal Inspection Report"))
   inspect(report.regions.length(), content="1")
 }
+
+///|
+test "threshold mask and morphology" {
+  let matrix = ThermalMatrix::from_rows([
+    [10.0, 50.0, 10.0],
+    [10.0, 10.0, 10.0],
+    [10.0, 10.0, 50.0],
+  ])
+  let mask = matrix.threshold_mask(min_temp=40.0)
+  inspect(mask.count(), content="2")
+  inspect(mask.to_ascii(), content=".#.\n...\n..#")
+  let closed = mask.close(radius=1)
+  inspect(closed.count(), content="5")
+}
