@@ -39,3 +39,17 @@ test "colorize maps cold and hot endpoints" {
   debug_inspect(frame.pixel(ThermalPoint::new(x=0, y=0)), content="{ r: 0, g: 0, b: 0 }")
   debug_inspect(frame.pixel(ThermalPoint::new(x=1, y=0)), content="{ r: 255, g: 255, b: 255 }")
 }
+
+///|
+test "threshold regions group connected hot pixels" {
+  let matrix = ThermalMatrix::from_rows([
+    [20.0, 21.0, 50.0],
+    [19.0, 47.0, 49.0],
+    [45.0, 20.0, 18.0],
+  ])
+  let regions = matrix.threshold_regions(min_temp=45.0)
+  inspect(regions.length(), content="2")
+  inspect(regions[0].area(), content="3")
+  debug_inspect(regions[0].peak, content="{ x: 2, y: 0 }")
+  inspect(regions[1].area(), content="1")
+}

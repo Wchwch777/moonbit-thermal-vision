@@ -39,6 +39,20 @@ pub(all) struct ColorFrame {
 } derive(Debug, Eq, ToJson)
 
 ///|
+pub(all) struct ThermalRegion {
+  id : Int
+  pixels : Array[ThermalPoint]
+  min_x : Int
+  min_y : Int
+  max_x : Int
+  max_y : Int
+  min_temp : Double
+  max_temp : Double
+  average_temp : Double
+  peak : ThermalPoint
+} derive(Debug, Eq, ToJson)
+
+///|
 pub(all) suberror ThermalError {
   InvalidDimensions(width~ : Int, height~ : Int, values~ : Int)
   EmptyMatrix
