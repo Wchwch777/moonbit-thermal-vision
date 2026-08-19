@@ -37,7 +37,9 @@ jobs:
           "$HOME/.moon/bin" | Out-File -FilePath $env:GITHUB_PATH -Append
 
       - name: Toolchain
-        run: moon version --all
+        run: |
+          moon version --all
+          moon env
 
       - name: Format
         run: moon fmt --check
@@ -53,3 +55,6 @@ jobs:
 
       - name: Test
         run: moon test --deny-warn
+
+      - name: Native build
+        run: moon build --target native

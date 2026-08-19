@@ -1,12 +1,16 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "Wchwch/moonbit-thermal-vision"
+package "Wchwch777/moonbit-thermal-vision"
 
 import {
   "moonbitlang/core/debug",
 }
 
 // Values
+pub fn classify_temperature(Double, TemperatureLimits) -> SampleQuality
+
 pub fn parse_temperature_matrix(String) -> ThermalMatrix raise ThermalError
+
+pub fn trend(Array[Double]) -> Trend
 
 // Errors
 pub(all) suberror ThermalError {
@@ -18,6 +22,30 @@ pub(all) suberror ThermalError {
 } derive(Eq, ToJson, @debug.Debug)
 
 // Types and methods
+pub(all) struct Anomaly {
+  point : ThermalPoint
+  value : Double
+  z_score : Double
+} derive(Eq, ToJson, @debug.Debug)
+
+pub(all) struct Calibration {
+  emissivity : Double
+  reflected_temperature : Double
+  ambient_temperature : Double
+  gain : Double
+  offset : Double
+} derive(Eq, ToJson, @debug.Debug)
+pub fn Calibration::apply(Self, Double) -> Double
+pub fn Calibration::corrected_emission(Self, Double) -> Double
+pub fn Calibration::identity() -> Self
+pub fn Calibration::new(emissivity~ : Double, reflected_temperature~ : Double, ambient_temperature~ : Double, gain? : Double, offset? : Double) -> Self
+
+pub(all) struct CalibrationReport {
+  before : ThermalStats
+  after : ThermalStats
+  calibration : Calibration
+} derive(Eq, ToJson, @debug.Debug)
+
 pub(all) struct ColorFrame {
   width : Int
   height : Int
@@ -25,6 +53,34 @@ pub(all) struct ColorFrame {
 } derive(Eq, ToJson, @debug.Debug)
 pub fn ColorFrame::pixel(Self, ThermalPoint) -> Rgb raise ThermalError
 pub fn ColorFrame::to_ppm_ascii(Self) -> String
+pub fn ColorFrame::to_ppm_ascii_wrapped(Self, columns~ : Int) -> String
+
+pub(all) struct CsvOptions {
+  delimiter : String
+  decimals : Int
+  include_header : Bool
+} derive(Eq, ToJson, @debug.Debug)
+pub fn CsvOptions::default() -> Self
+
+pub(all) enum FilterKind {
+  Mean
+  Median
+  Minimum
+  Maximum
+} derive(Eq, ToJson, @debug.Debug)
+
+pub(all) struct FrameDelta {
+  changed : Int
+  mean_absolute : Double
+  maximum_absolute : Double
+  normalized : Double
+} derive(Eq, ToJson, @debug.Debug)
+
+pub(all) struct HistogramBin {
+  lower : Double
+  upper : Double
+  count : Int
+} derive(Eq, ToJson, @debug.Debug)
 
 pub(all) struct Hotspot {
   point : ThermalPoint
@@ -42,11 +98,31 @@ pub(all) struct InspectionReport {
 } derive(Eq, ToJson, @debug.Debug)
 pub fn InspectionReport::to_markdown(Self) -> String
 
+pub(all) struct Kernel {
+  width : Int
+  height : Int
+  values : Array[Double]
+} derive(Eq, ToJson, @debug.Debug)
+pub fn Kernel::box(size~ : Int) -> Self raise ThermalError
+pub fn Kernel::new(width~ : Int, height~ : Int, values~ : Array[Double]) -> Self raise ThermalError
+
 pub(all) enum Palette {
   Gray
   Ironbow
   BlueRed
 } derive(Eq, ToJson, @debug.Debug)
+
+pub(all) struct QualitySummary {
+  total : Int
+  valid : Int
+  missing : Int
+  non_finite : Int
+  below_limit : Int
+  above_limit : Int
+  min_valid : Double
+  max_valid : Double
+} derive(Eq, ToJson, @debug.Debug)
+pub fn QualitySummary::to_markdown(Self) -> String
 
 pub(all) struct Rgb {
   r : Int
@@ -54,6 +130,21 @@ pub(all) struct Rgb {
   b : Int
 } derive(Eq, ToJson, @debug.Debug)
 pub fn Rgb::new(r~ : Int, g~ : Int, b~ : Int) -> Self
+
+pub(all) enum SampleQuality {
+  Valid
+  Missing
+  NonFinite
+  BelowPhysicalLimit
+  AbovePhysicalLimit
+} derive(Eq, ToJson, @debug.Debug)
+
+pub(all) struct TemperatureLimits {
+  minimum : Double
+  maximum : Double
+} derive(Eq, ToJson, @debug.Debug)
+pub fn TemperatureLimits::contains(Self, Double) -> Bool
+pub fn TemperatureLimits::new(minimum~ : Double, maximum~ : Double) -> Self
 
 pub(all) struct TemperatureRange {
   min : Double
@@ -67,36 +158,61 @@ pub(all) struct ThermalMask {
   height : Int
   cells : Array[Bool]
 } derive(Eq, ToJson, @debug.Debug)
+pub fn ThermalMask::bounding_box(Self) -> ThermalRegion?
 pub fn ThermalMask::close(Self, radius? : Int) -> Self
 pub fn ThermalMask::count(Self) -> Int
 pub fn ThermalMask::dilate(Self, radius? : Int) -> Self
 pub fn ThermalMask::erode(Self, radius? : Int) -> Self
 pub fn ThermalMask::get(Self, ThermalPoint) -> Bool raise ThermalError
+pub fn ThermalMask::intersection(Self, Self) -> Self raise ThermalError
+pub fn ThermalMask::invert(Self) -> Self
 pub fn ThermalMask::new(width~ : Int, height~ : Int, cells~ : Array[Bool]) -> Self raise ThermalError
 pub fn ThermalMask::open(Self, radius? : Int) -> Self
 pub fn ThermalMask::to_ascii(Self, hot? : String, cold? : String) -> String
+pub fn ThermalMask::to_pbm_ascii(Self) -> String
+pub fn ThermalMask::union(Self, Self) -> Self raise ThermalError
 
 pub(all) struct ThermalMatrix {
   width : Int
   height : Int
   values : Array[Double]
 } derive(Eq, ToJson, @debug.Debug)
+pub fn ThermalMatrix::anomalies(Self, z_limit? : Double) -> Array[Anomaly] raise ThermalError
+pub fn ThermalMatrix::calibrate(Self, Calibration) -> Self
+pub fn ThermalMatrix::calibration_report(Self, Calibration) -> CalibrationReport raise ThermalError
 pub fn ThermalMatrix::colorize(Self, palette? : Palette, range? : TemperatureRange) -> ColorFrame raise ThermalError
+pub fn ThermalMatrix::column_trends(Self) -> Array[Trend]
+pub fn ThermalMatrix::convolve(Self, Kernel) -> Self
+pub fn ThermalMatrix::correct_emissivity(Self, Calibration) -> Self
 pub fn ThermalMatrix::crop(Self, origin~ : ThermalPoint, width~ : Int, height~ : Int) -> Self raise ThermalError
+pub fn ThermalMatrix::delta(Self, Self) -> FrameDelta raise ThermalError
 pub fn ThermalMatrix::detect_hotspots(Self, min_temp~ : Double, radius? : Int, min_contrast? : Double, limit? : Int) -> Array[Hotspot]
+pub fn ThermalMatrix::filter(Self, radius? : Int, kind? : FilterKind) -> Self
 pub fn ThermalMatrix::from_rows(Array[Array[Double]]) -> Self raise ThermalError
 pub fn ThermalMatrix::get(Self, ThermalPoint) -> Double raise ThermalError
+pub fn ThermalMatrix::gradient(Self) -> Self
+pub fn ThermalMatrix::histogram(Self, bins~ : Int) -> Array[HistogramBin] raise ThermalError
+pub fn ThermalMatrix::hot_fraction(Self, threshold~ : Double) -> Double
 pub fn ThermalMatrix::index(Self, ThermalPoint) -> Int raise ThermalError
 pub fn ThermalMatrix::inspect_threshold(Self, threshold~ : Double, hotspot_limit? : Int) -> InspectionReport raise ThermalError
+pub fn ThermalMatrix::laplacian(Self) -> Self raise ThermalError
 pub fn ThermalMatrix::map(Self, (Double) -> Double) -> Self
+pub fn ThermalMatrix::mean_filter(Self, radius? : Int) -> Self
+pub fn ThermalMatrix::median_filter(Self, radius? : Int) -> Self
 pub fn ThermalMatrix::new(width~ : Int, height~ : Int, values~ : Array[Double]) -> Self raise ThermalError
+pub fn ThermalMatrix::quality(Self, TemperatureLimits) -> QualitySummary
 pub fn ThermalMatrix::range(Self) -> TemperatureRange raise ThermalError
+pub fn ThermalMatrix::rescale(Self, width~ : Int, height~ : Int) -> Self raise ThermalError
 pub fn ThermalMatrix::row(Self, Int) -> Array[Double] raise ThermalError
+pub fn ThermalMatrix::row_trends(Self) -> Array[Trend] raise ThermalError
+pub fn ThermalMatrix::sharpen(Self, amount? : Double) -> Self raise ThermalError
 pub fn ThermalMatrix::stats(Self) -> ThermalStats raise ThermalError
 pub fn ThermalMatrix::threshold_mask(Self, min_temp~ : Double, max_temp? : Double) -> ThermalMask
 pub fn ThermalMatrix::threshold_regions(Self, min_temp~ : Double, max_temp? : Double) -> Array[ThermalRegion]
 pub fn ThermalMatrix::to_csv(Self) -> String
+pub fn ThermalMatrix::to_csv_with(Self, CsvOptions) -> String
 pub fn ThermalMatrix::unsafe_get(Self, x~ : Int, y~ : Int) -> Double
+pub fn ThermalMatrix::valid_mask(Self, TemperatureLimits) -> ThermalMask
 
 pub(all) struct ThermalPoint {
   x : Int
@@ -117,6 +233,8 @@ pub(all) struct ThermalRegion {
   peak : ThermalPoint
 } derive(Eq, ToJson, @debug.Debug)
 pub fn ThermalRegion::area(Self) -> Int
+pub fn ThermalRegion::perimeter(Self) -> Int
+pub fn ThermalRegion::summary(Self) -> String
 
 pub(all) struct ThermalStats {
   count : Int
@@ -129,7 +247,14 @@ pub(all) struct ThermalStats {
   p95 : Double
 } derive(Eq, ToJson, @debug.Debug)
 
+pub(all) struct Trend {
+  slope : Double
+  intercept : Double
+  first : Double
+  last : Double
+  direction : Int
+} derive(Eq, ToJson, @debug.Debug)
+
 // Type aliases
 
 // Traits
-

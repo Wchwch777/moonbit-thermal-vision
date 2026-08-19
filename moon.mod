@@ -9,7 +9,7 @@
 //   "moonbitlang/x@0.4.6",
 // }
 
-name = "Wchwch/moonbit-thermal-vision"
+name = "Wchwch777/moonbit-thermal-vision"
 
 version = "0.1.0"
 
