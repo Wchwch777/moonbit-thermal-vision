@@ -15,6 +15,8 @@ adapter provides a numeric temperature grid.
 - Local hotspot detection, frame deltas, row/column trends, and quality reports.
 - Emissivity/gain/offset calibration, mean/median filters, kernels, convolution,
   Laplacian and sharpening helpers.
+- Deterministic 2048-entry pseudocolor and normalization lookup tables for
+  embedded/native deployments that need stable output without interpolation.
 
 The root package owns the domain model and algorithms. `cmd/main` is a small
 demonstration; `cmd/benchmark` is a reproducible workload entry point.
@@ -67,7 +69,8 @@ root package
 ├── hotspots / analytics  local peaks, histograms, anomalies
 ├── calibration / quality input correction and quality classification
 ├── filters / spatial     smoothing, kernels, gradients, convolution
-└── temporal              frame deltas and trend analysis
+├── temporal / tracking   frame deltas, trends, and region trajectories
+└── lookup_tables         deterministic 2048-entry edge-deployment LUTs
 ```
 
 Algorithms operate on ordinary MoonBit arrays and standard-library types.

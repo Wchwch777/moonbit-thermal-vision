@@ -6,9 +6,45 @@ import {
 }
 
 // Values
+pub fn autocorrelation(Array[Double], lag~ : Int) -> Double
+
+pub fn auxiliary_lut_resolution() -> Int
+
+pub fn blue_red_lut() -> Array[Rgb]
+
 pub fn classify_temperature(Double, TemperatureLimits) -> SampleQuality
 
+pub fn confidence_lut() -> Array[Double]
+
+pub fn derivative(Array[Double]) -> Array[Double]
+
+pub fn edge_response_lut() -> Array[Double]
+
+pub fn find_peaks(Array[Double], minimum_prominence? : Double, minimum_distance? : Int) -> Array[SignalPeak]
+
+pub fn gamma_lut() -> Array[Double]
+
+pub fn gray_lut() -> Array[Rgb]
+
+pub fn integrate(Array[Double], step? : Double) -> Double
+
+pub fn ironbow_lut() -> Array[Rgb]
+
+pub fn lut_resolution() -> Int
+
+pub fn normalized_temperature_lut() -> Array[Double]
+
 pub fn parse_temperature_matrix(String) -> ThermalMatrix raise ThermalError
+
+pub fn quantization_lut() -> Array[Int]
+
+pub fn second_derivative(Array[Double]) -> Array[Double]
+
+pub fn smooth_signal(Array[Double], radius? : Int) -> Array[Double]
+
+pub fn summarize_tracks(Array[ThermalTrack]) -> MotionSummary
+
+pub fn track_regions(Array[Array[ThermalRegion]], config? : TrackingConfig) -> Array[ThermalTrack]
 
 pub fn trend(Array[Double]) -> Trend
 
@@ -26,6 +62,13 @@ pub(all) struct Anomaly {
   point : ThermalPoint
   value : Double
   z_score : Double
+} derive(Eq, ToJson, @debug.Debug)
+
+pub(all) struct BoundaryPixel {
+  point : ThermalPoint
+  value : Double
+  normal_x : Int
+  normal_y : Int
 } derive(Eq, ToJson, @debug.Debug)
 
 pub(all) struct Calibration {
@@ -106,10 +149,23 @@ pub(all) struct Kernel {
 pub fn Kernel::box(size~ : Int) -> Self raise ThermalError
 pub fn Kernel::new(width~ : Int, height~ : Int, values~ : Array[Double]) -> Self raise ThermalError
 
+pub(all) struct MotionSummary {
+  track_count : Int
+  active_count : Int
+  total_observations : Int
+  fastest_track : Int
+  hottest_track : Int
+} derive(Eq, ToJson, @debug.Debug)
+
 pub(all) enum Palette {
   Gray
   Ironbow
   BlueRed
+} derive(Eq, ToJson, @debug.Debug)
+
+pub(all) struct ProfileSample {
+  distance : Int
+  temperature : Double
 } derive(Eq, ToJson, @debug.Debug)
 
 pub(all) struct QualitySummary {
@@ -139,6 +195,13 @@ pub(all) enum SampleQuality {
   AbovePhysicalLimit
 } derive(Eq, ToJson, @debug.Debug)
 
+pub(all) struct SignalPeak {
+  index : Int
+  value : Double
+  prominence : Double
+  width : Int
+} derive(Eq, ToJson, @debug.Debug)
+
 pub(all) struct TemperatureLimits {
   minimum : Double
   maximum : Double
@@ -163,11 +226,13 @@ pub fn ThermalMask::close(Self, radius? : Int) -> Self
 pub fn ThermalMask::count(Self) -> Int
 pub fn ThermalMask::dilate(Self, radius? : Int) -> Self
 pub fn ThermalMask::erode(Self, radius? : Int) -> Self
+pub fn ThermalMask::fill_holes(Self) -> Self
 pub fn ThermalMask::get(Self, ThermalPoint) -> Bool raise ThermalError
 pub fn ThermalMask::intersection(Self, Self) -> Self raise ThermalError
 pub fn ThermalMask::invert(Self) -> Self
 pub fn ThermalMask::new(width~ : Int, height~ : Int, cells~ : Array[Bool]) -> Self raise ThermalError
 pub fn ThermalMask::open(Self, radius? : Int) -> Self
+pub fn ThermalMask::remove_small_components(Self, minimum_area~ : Int) -> Self
 pub fn ThermalMask::to_ascii(Self, hot? : String, cold? : String) -> String
 pub fn ThermalMask::to_pbm_ascii(Self) -> String
 pub fn ThermalMask::union(Self, Self) -> Self raise ThermalError
@@ -177,10 +242,14 @@ pub(all) struct ThermalMatrix {
   height : Int
   values : Array[Double]
 } derive(Eq, ToJson, @debug.Debug)
+pub fn ThermalMatrix::adaptive_mask(Self, ThresholdMode) -> ThermalMask raise ThermalError
 pub fn ThermalMatrix::anomalies(Self, z_limit? : Double) -> Array[Anomaly] raise ThermalError
+pub fn ThermalMatrix::boundary(Self, ThermalMask) -> Array[BoundaryPixel] raise ThermalError
 pub fn ThermalMatrix::calibrate(Self, Calibration) -> Self
 pub fn ThermalMatrix::calibration_report(Self, Calibration) -> CalibrationReport raise ThermalError
 pub fn ThermalMatrix::colorize(Self, palette? : Palette, range? : TemperatureRange) -> ColorFrame raise ThermalError
+pub fn ThermalMatrix::colorize_lut(Self, palette? : Palette, range? : TemperatureRange) -> ColorFrame
+pub fn ThermalMatrix::column_signal(Self, Int) -> Array[Double] raise ThermalError
 pub fn ThermalMatrix::column_trends(Self) -> Array[Trend]
 pub fn ThermalMatrix::convolve(Self, Kernel) -> Self
 pub fn ThermalMatrix::correct_emissivity(Self, Calibration) -> Self
@@ -196,29 +265,45 @@ pub fn ThermalMatrix::hot_fraction(Self, threshold~ : Double) -> Double
 pub fn ThermalMatrix::index(Self, ThermalPoint) -> Int raise ThermalError
 pub fn ThermalMatrix::inspect_threshold(Self, threshold~ : Double, hotspot_limit? : Int) -> InspectionReport raise ThermalError
 pub fn ThermalMatrix::laplacian(Self) -> Self raise ThermalError
+pub fn ThermalMatrix::line_profile(Self, start~ : ThermalPoint, end~ : ThermalPoint) -> Array[ProfileSample] raise ThermalError
 pub fn ThermalMatrix::map(Self, (Double) -> Double) -> Self
+pub fn ThermalMatrix::masked_values(Self, ThermalMask) -> Array[Double] raise ThermalError
 pub fn ThermalMatrix::mean_filter(Self, radius? : Int) -> Self
 pub fn ThermalMatrix::median_filter(Self, radius? : Int) -> Self
 pub fn ThermalMatrix::new(width~ : Int, height~ : Int, values~ : Array[Double]) -> Self raise ThermalError
+pub fn ThermalMatrix::peak_map(Self, radius? : Int) -> ThermalMask
 pub fn ThermalMatrix::quality(Self, TemperatureLimits) -> QualitySummary
 pub fn ThermalMatrix::range(Self) -> TemperatureRange raise ThermalError
+pub fn ThermalMatrix::region_adjacency(Self, Array[ThermalRegion]) -> Array[Array[Int]]
 pub fn ThermalMatrix::rescale(Self, width~ : Int, height~ : Int) -> Self raise ThermalError
+pub fn ThermalMatrix::roi(Self, ThermalRoi) -> Self raise ThermalError
+pub fn ThermalMatrix::roi_column_profile(Self, ThermalRoi) -> Array[Double] raise ThermalError
+pub fn ThermalMatrix::roi_mean_profile(Self, ThermalRoi) -> Array[Double] raise ThermalError
+pub fn ThermalMatrix::roi_stats(Self, ThermalRoi) -> ThermalStats raise ThermalError
 pub fn ThermalMatrix::row(Self, Int) -> Array[Double] raise ThermalError
+pub fn ThermalMatrix::row_signal(Self, Int) -> Array[Double] raise ThermalError
 pub fn ThermalMatrix::row_trends(Self) -> Array[Trend] raise ThermalError
 pub fn ThermalMatrix::sharpen(Self, amount? : Double) -> Self raise ThermalError
 pub fn ThermalMatrix::stats(Self) -> ThermalStats raise ThermalError
 pub fn ThermalMatrix::threshold_mask(Self, min_temp~ : Double, max_temp? : Double) -> ThermalMask
 pub fn ThermalMatrix::threshold_regions(Self, min_temp~ : Double, max_temp? : Double) -> Array[ThermalRegion]
+pub fn ThermalMatrix::threshold_value(Self, ThresholdMode) -> Double raise ThermalError
 pub fn ThermalMatrix::to_csv(Self) -> String
 pub fn ThermalMatrix::to_csv_with(Self, CsvOptions) -> String
+pub fn ThermalMatrix::track_frame_sequence(Array[Self], threshold~ : Double, config? : TrackingConfig) -> Array[ThermalTrack]
 pub fn ThermalMatrix::unsafe_get(Self, x~ : Int, y~ : Int) -> Double
 pub fn ThermalMatrix::valid_mask(Self, TemperatureLimits) -> ThermalMask
+pub fn ThermalMatrix::weighted_mean(Self, Self) -> Double raise ThermalError
 
 pub(all) struct ThermalPoint {
   x : Int
   y : Int
 } derive(Eq, ToJson, @debug.Debug)
+pub fn ThermalPoint::chebyshev(Self, Self) -> Int
+pub fn ThermalPoint::manhattan(Self, Self) -> Int
+pub fn ThermalPoint::neighbors(Self, connectivity? : Int) -> Array[Self]
 pub fn ThermalPoint::new(x~ : Int, y~ : Int) -> Self
+pub fn ThermalPoint::translate(Self, dx~ : Int, dy~ : Int) -> Self
 
 pub(all) struct ThermalRegion {
   id : Int
@@ -233,8 +318,22 @@ pub(all) struct ThermalRegion {
   peak : ThermalPoint
 } derive(Eq, ToJson, @debug.Debug)
 pub fn ThermalRegion::area(Self) -> Int
+pub fn ThermalRegion::centroid(Self) -> ThermalPoint
+pub fn ThermalRegion::compactness(Self) -> Double
 pub fn ThermalRegion::perimeter(Self) -> Int
 pub fn ThermalRegion::summary(Self) -> String
+
+pub(all) struct ThermalRoi {
+  origin : ThermalPoint
+  width : Int
+  height : Int
+} derive(Eq, ToJson, @debug.Debug)
+pub fn ThermalRoi::area(Self) -> Int
+pub fn ThermalRoi::contains(Self, ThermalPoint) -> Bool
+pub fn ThermalRoi::end(Self) -> ThermalPoint
+pub fn ThermalRoi::intersection(Self, Self) -> Self?
+pub fn ThermalRoi::new(origin~ : ThermalPoint, width~ : Int, height~ : Int) -> Self raise ThermalError
+pub fn ThermalRoi::union(Self, Self) -> Self
 
 pub(all) struct ThermalStats {
   count : Int
@@ -246,6 +345,38 @@ pub(all) struct ThermalStats {
   p90 : Double
   p95 : Double
 } derive(Eq, ToJson, @debug.Debug)
+
+pub(all) struct ThermalTrack {
+  id : Int
+  observations : Array[TrackObservation]
+  mut active : Bool
+} derive(Eq, ToJson, @debug.Debug)
+pub fn ThermalTrack::last(Self) -> TrackObservation?
+pub fn ThermalTrack::length(Self) -> Int
+pub fn ThermalTrack::peak(Self) -> TrackObservation?
+pub fn ThermalTrack::to_markdown(Self) -> String
+pub fn ThermalTrack::velocity(Self) -> ThermalPoint
+
+pub(all) enum ThresholdMode {
+  Absolute(Double)
+  MeanOffset(Double)
+  MedianOffset(Double)
+  Percentile(Double)
+} derive(Eq, ToJson, @debug.Debug)
+
+pub(all) struct TrackObservation {
+  frame : Int
+  point : ThermalPoint
+  temperature : Double
+  area : Int
+} derive(Eq, ToJson, @debug.Debug)
+
+pub(all) struct TrackingConfig {
+  maximum_distance : Int
+  maximum_gap : Int
+  minimum_temperature : Double
+} derive(Eq, ToJson, @debug.Debug)
+pub fn TrackingConfig::default() -> Self
 
 pub(all) struct Trend {
   slope : Double
